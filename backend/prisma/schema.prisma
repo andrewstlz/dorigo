@@ -1,0 +1,72 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String    @id @default(cuid())
+  email     String    @unique
+  password  String
+  name      String
+  role      Role      @default(MEMBER)
+  voicePart VoicePart?
+
+  signups   Signup[]
+  createdAt DateTime @default(now())
+}
+
+model Event {
+  id          String    @id @default(cuid())
+  title       String
+  description String?
+  date        DateTime
+  location    String?
+  setList     String?
+
+  quotas      Quota[]
+  signups     Signup[]
+  createdAt   DateTime @default(now())
+}
+
+model Quota {
+  id        String     @id @default(cuid())
+  event     Event      @relation(fields: [eventId], references: [id])
+  eventId   String
+
+  voicePart VoicePart
+  required  Int
+  filled    Int      @default(0)
+}
+
+model Signup {
+  id        String   @id @default(cuid())
+  event     Event    @relation(fields: [eventId], references: [id])
+  eventId   String
+
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+
+  remarks   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum Role {
+  OFFICER
+  MEMBER
+}
+
+enum VoicePart {
+  S1
+  S2
+  A1
+  A2
+  T1
+  T2
+  B1
+  B2
+}
