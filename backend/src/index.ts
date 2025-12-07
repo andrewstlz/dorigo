@@ -8,8 +8,6 @@ import cors from "cors";
 
 const app = express();
 
-// Middleware
-app.use(express.json());
 app.use(
   cors({
     origin: "http://localhost:3000",
@@ -17,10 +15,14 @@ app.use(
   })
 );
 
+// Middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 // Sessions
 app.use(
   session({
-    secret: "supersecret-key", // move to ENV later
+    secret: process.env.SESSION_SECRET!,
     resave: false,
     saveUninitialized: false,
     cookie: { secure: false }, // secure: true only in production
