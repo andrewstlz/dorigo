@@ -1,12 +1,11 @@
 import "./globals.css";
-import { Inter } from "next/font/google";
+import { Jua } from "next/font/google";
+import Header from "@/components/Header";
 
-const inter = Inter({ subsets: ["latin"] });
-
-export const metadata = {
-  title: "Dorigo",
-  description: "Glee Club Signup System",
-};
+const jua = Jua({
+  subsets: ["latin"],
+  weight: "400",
+});
 
 export default function RootLayout({
   children,
@@ -15,7 +14,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={`${jua.className} bg-zinc-50`}>
+        <Header />
+        <main>{children}</main>
+      </body>
     </html>
   );
 }

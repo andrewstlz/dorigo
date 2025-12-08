@@ -37,7 +37,9 @@ export default function CalendarPage() {
   return (
     <div className="p-6">
       <h1 className="text-3xl font-bold mb-6">Performance Calendar</h1>
-      <BackButton />
+      <div className="mb-6">
+        <BackButton />
+      </div>
 
       <FullCalendar
         plugins={[dayGridPlugin, interactionPlugin]}

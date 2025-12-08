@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import SignupButton from "@/components/SignupButton";
 import api from "@/lib/api";
+import BackButton from "@/components/BackButton";
 
 type EventData = {
   id: string;
@@ -70,13 +71,15 @@ export default function EventPage({ params }: { params: { id: string } }) {
     <div className="max-w-2xl mx-auto py-10">
       <h1 className="text-3xl font-bold">{event.title}</h1>
       <p className="text-gray-600 mt-2">{event.description}</p>
+      <BackButton />
 
       <div className="mt-4">
         <p>
           <strong>Date:</strong> {new Date(event.date).toLocaleString()}
         </p>
         <p>
-          <strong>Location:</strong> {event.location}
+          <strong>Location:</strong> {event.location} <br></br>
+          <strong>Set List:</strong> {event.setList}
         </p>
       </div>
 

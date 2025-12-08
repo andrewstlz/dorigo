@@ -22,7 +22,31 @@ export default function SignupButton({
 
     setLoading(true);
     try {
-      await api.post("/signups", { eventId, remarks: "" });
+      interface MeResponse {
+        user: {
+          id: string;
+          email: string;
+          name: string;
+          role: string;
+          voicePart?: string;
+        } | null;
+      }
+
+      const me = await api.get<MeResponse>("/auth/me");
+
+      if (!me.data.user) {
+        alert("You must be logged in.");
+        return;
+      }
+      const userId = me.data.user.id;
+
+      // 2. Create signup
+      await api.post("/signups", {
+        eventId,
+        userId,
+        remarks: "",
+      });
+
       setSignedUp(true);
       router.refresh();
     } catch (err: any) {
