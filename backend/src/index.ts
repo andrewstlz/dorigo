@@ -19,13 +19,17 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.get("/", (_req, res) => {
+  res.json({ status: "ok", message: "Dorigo API" });
+});
+
 // Sessions
 app.use(
   session({
     secret: process.env.SESSION_SECRET!,
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: false }, // secure: true only in production
+    cookie: { secure: false },
   })
 );
 
