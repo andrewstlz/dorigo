@@ -1,31 +1,21 @@
-import { redirect } from "next/navigation";
-import api from "@/lib/api";
+"use client";
 
-interface MeResponse {
-  user: {
-    id: string;
-    name: string;
-    email: string;
-    role: "OFFICER" | "MEMBER";
-    voicePart?: string;
-  } | null;
-}
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useUser } from "@/hooks/useUser";
 
-export default async function HomePage() {
-  try {
-    // Attempt to fetch the logged-in user (server-side)
-    const res = await api.get<MeResponse>("/auth/me");
-    const user = res.data.user;
+export default function HomePage() {
+  const router = useRouter();
+  const { user, loading } = useUser();
 
+  useEffect(() => {
+    if (loading) return;
     if (user) {
-      // If logged in → go to dashboard
-      redirect("/dashboard");
+      router.replace("/dashboard");
     } else {
-      // If not logged in → go to login
-      redirect("/login");
+      router.replace("/login");
     }
-  } catch {
-    // Any error → assume not logged in
-    redirect("/login");
-  }
+  }, [loading, user, router]);
+
+  return null;
 }

@@ -4,6 +4,7 @@ import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import { useState, useEffect } from "react";
+import BackButton from "@/components/BackButton";
 import api from "@/lib/api";
 
 interface EventItem {
@@ -12,14 +13,18 @@ interface EventItem {
   date: string;
 }
 
+interface EventsResponse {
+  events: EventItem[];
+}
+
 export default function CalendarPage() {
   const [events, setEvents] = useState<EventItem[]>([]);
 
   useEffect(() => {
     async function fetchEvents() {
-      const res = await api.get<EventItem[]>("/events");
+      const res = await api.get<EventsResponse>("/events");
       setEvents(
-        res.data.map((e: any) => ({
+        res.data.events.map((e: any) => ({
           id: e.id,
           title: e.title,
           date: e.date,
@@ -32,6 +37,7 @@ export default function CalendarPage() {
   return (
     <div className="p-6">
       <h1 className="text-3xl font-bold mb-6">Performance Calendar</h1>
+      <BackButton />
 
       <FullCalendar
         plugins={[dayGridPlugin, interactionPlugin]}

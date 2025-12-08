@@ -1,64 +1,70 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import SignupButton from "@/components/SignupButton";
 import api from "@/lib/api";
 
-interface EventPageProps {
-  params: { id: string };
-}
-
-interface EventResponse {
-  event: {
+type EventData = {
+  id: string;
+  title: string;
+  description?: string;
+  date: string;
+  location?: string;
+  setList?: string;
+  signups: {
     id: string;
-    title: string;
-    description?: string;
-    date: string;
-    location?: string;
-    setList?: string;
-    signups: Array<{
-      id: string;
-      remarks?: string;
-      user: { id: string; name: string; voicePart?: string };
-    }>;
-  };
-}
+    remarks?: string;
+    user: { id: string; name: string; voicePart?: string };
+  }[];
+};
 
-interface MeResponse {
-  user: {
-    id: string;
-    name: string;
-    role: "OFFICER" | "MEMBER";
-    voicePart?: string;
-  } | null;
-}
+type Me = {
+  id: string;
+  name: string;
+  role: "OFFICER" | "MEMBER";
+  voicePart?: string;
+} | null;
 
-export default async function EventPage({ params }: EventPageProps) {
-  const eventId = params.id;
+export default function EventPage({ params }: { params: { id: string } }) {
+  const { id: eventId } = params;
+  const [event, setEvent] = useState<EventData | null>(null);
+  const [user, setUser] = useState<Me>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // --- Fetch Event ---
-  let event: EventResponse["event"] | null = null;
-  try {
-    const res = await api.get<EventResponse>(`/events/${eventId}`);
-    event = res.data.event;
-  } catch (err) {
+  useEffect(() => {
+    async function load() {
+      try {
+        const [eventRes, meRes] = await Promise.allSettled([
+          api.get<{ event: EventData }>(`/events/${eventId}`),
+          api.get<{ user: Me }>("/auth/me"),
+        ]);
+        if (eventRes.status === "fulfilled")
+          setEvent(eventRes.value.data.event);
+        else setError("Failed to load event.");
+        if (meRes.status === "fulfilled") setUser(meRes.value.data.user);
+      } catch (err) {
+        setError("Failed to load event.");
+      } finally {
+        setLoading(false);
+      }
+    }
+    load();
+  }, [eventId]);
+
+  if (loading) return <div className="p-6">Loading...</div>;
+  if (error || !event)
     return (
       <div className="p-6">
         <h1 className="text-xl font-semibold text-red-600">
-          Failed to load event.
+          {error || "Event not found."}
         </h1>
       </div>
     );
-  }
 
-  // --- Fetch Logged-in User ---
-  let user: MeResponse["user"] = null;
-  try {
-    const me = await api.get<MeResponse>("/auth/me");
-    user = me.data.user;
-  } catch {}
-
-  const alreadySignedUp =
-    user && event.signups.some((s) => s.user.id === user.id);
+  const alreadySignedUp = !!(
+    user && event.signups.some((s) => s.user.id === user.id)
+  );
 
   return (
     <div className="max-w-2xl mx-auto py-10">
@@ -76,10 +82,7 @@ export default async function EventPage({ params }: EventPageProps) {
 
       <div className="mt-6">
         {user ? (
-          <SignupButton
-            eventId={event.id}
-            alreadySignedUp={!!alreadySignedUp}
-          />
+          <SignupButton eventId={event.id} alreadySignedUp={alreadySignedUp} />
         ) : (
           <a href="/login" className="text-blue-600 underline">
             Please log in to sign up
