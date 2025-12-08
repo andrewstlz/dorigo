@@ -88,4 +88,29 @@ router.post("/", async (req: any, res) => {
   }
 });
 
+// ------------------------------------------------------
+// GET /signups/my
+// Return all signups for the logged-in user
+// ------------------------------------------------------
+router.get("/my", async (req: any, res) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ error: "Not logged in" });
+    }
+
+    const signups = await prisma.signup.findMany({
+      where: { userId: req.user.id },
+      include: {
+        event: true, // include event details for the frontend
+      },
+      orderBy: { createdAt: "desc" },
+    });
+
+    return res.json({ signups });
+  } catch (err) {
+    console.error("Fetch signups error:", err);
+    return res.status(500).json({ error: "Failed to fetch signups" });
+  }
+});
+
 export default router;
