@@ -11,12 +11,10 @@ export default function MySignups() {
 
   useEffect(() => {
     async function load() {
-      // Get logged-in user
       const me = await api.get<{ user: User | null }>("/auth/me");
       const user = me.data.user;
       if (!user) return;
 
-      // Fetch THEIR signups
       const res = await api.get<{ signups: Signup[] }>("/signups/my");
       setSignups(res.data.signups);
     }

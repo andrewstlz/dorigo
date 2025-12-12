@@ -40,7 +40,6 @@ export default function SignupButton({
       }
       const userId = me.data.user.id;
 
-      // 2. Create signup
       await api.post("/signups", {
         eventId,
         userId,

@@ -38,7 +38,7 @@ router.get("/:id", async (req, res) => {
       include: {
         signups: {
           include: {
-            user: true, // user info for display
+            user: true,
           },
         },
         quotas: true,
@@ -74,12 +74,9 @@ router.post("/", requireOfficer, async (req: any, res) => {
       return res.status(400).json({ error: "Missing title or date" });
     }
 
-    // First create event
     const newEvent = await prisma.event.create({
       data: { title, description, date: new Date(date), location, setList },
     });
-
-    // Add quotas (array of { voicePart, required })
 
     if (quotas && Array.isArray(quotas)) {
       for (const q of quotas) {

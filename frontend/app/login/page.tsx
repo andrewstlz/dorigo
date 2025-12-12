@@ -13,7 +13,7 @@ export default function LoginPage() {
     e.preventDefault();
     try {
       await api.post("/auth/login", { email, password });
-      router.push("/"); // redirect home or wherever you prefer
+      router.push("/");
       router.refresh();
     } catch (err: any) {
       alert(err.response?.data?.error || "Login failed");

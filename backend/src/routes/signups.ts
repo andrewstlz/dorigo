@@ -11,7 +11,6 @@ function requireAuth(req, res, next) {
 }
 
 // POST /signups
-// Create a signup for an event
 // ------------------------------
 router.post("/", async (req: any, res) => {
   try {
@@ -90,7 +89,6 @@ router.post("/", async (req: any, res) => {
 
 // ------------------------------------------------------
 // GET /signups/my
-// Return all signups for the logged-in user
 // ------------------------------------------------------
 router.get("/my", async (req: any, res) => {
   try {
@@ -101,7 +99,7 @@ router.get("/my", async (req: any, res) => {
     const signups = await prisma.signup.findMany({
       where: { userId: req.user.id },
       include: {
-        event: true, // include event details for the frontend
+        event: true,
       },
       orderBy: { createdAt: "desc" },
     });

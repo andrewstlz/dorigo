@@ -46,6 +46,7 @@ export default function CalendarPage() {
         initialView="dayGridMonth"
         height="auto"
         events={events}
+        eventClassNames={() => "cursor-pointer"}
         eventClick={(info) => {
           window.location.href = `/events/${info.event.id}`;
         }}
